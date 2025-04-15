@@ -1,6 +1,6 @@
-@hairmony_api_HostAddress = http://localhost:5220
+@hairmony_api_HostAddress = http://localhost:7195
 
-GET {{hairmony_api_HostAddress}}/weatherforecast/
+GET {{hairmony_api_HostAddress}}/
 Accept: application/json
 
 ###

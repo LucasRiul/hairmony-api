@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("hairmony-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2b9f3492a79afe9f78f8c02b82df3eda81d5ec64")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4b59f88b72d9c5c233a458adbb6af19d6e88d365")]
 [assembly: System.Reflection.AssemblyProductAttribute("hairmony-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("hairmony-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

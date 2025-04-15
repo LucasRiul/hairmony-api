@@ -1,0 +1,18 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+# Ignorar pastas obj e bin (arquivos de build do .NET)
+obj/
+bin/
+
+# Ignorar arquivos temporários do usuário
+*.user
+*.suo
+
+# Ignorar arquivos de log
+*.log
+
+# Ignorar arquivos de configuração locais
+appsettings.Development.json
