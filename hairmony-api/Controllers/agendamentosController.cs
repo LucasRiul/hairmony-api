@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using hairmony_api.Data;
 using hairmony_api.Model;
+using NuGet.Common;
 
 namespace hairmony_api.Controllers
 {
@@ -76,8 +77,29 @@ namespace hairmony_api.Controllers
         // POST: api/agendamentos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<agendamentos>> Postagendamentos(agendamentos agendamentos)
+        public async Task<ActionResult<agendamentos>> Postagendamentos(agendamentos agendamentos, bool repete, double? dias)
         {
+            var servico = await _context.servicos.FindAsync(agendamentos.servicoId);
+            if (repete && dias != null && servico != null)
+            {
+                var deDia = agendamentos.data_de;
+                var ateDia = new DateTime(DateTime.Now.Year, 12, 31); // Até o fim do ano
+                while (deDia < ateDia)
+                {
+                    //cria novo agendamento
+                    var ag = new agendamentos();
+                    ag.data_de = deDia.AddDays(dias.Value);
+                    ag.data_ate = ag.data_de.AddMinutes(servico.duracao);
+                    ag.clienteId = agendamentos.clienteId;
+                    ag.servicoId = agendamentos.servicoId;
+                    ag.salaoId = agendamentos.salaoId;
+                    ag.colaboradorId = agendamentos.colaboradorId;
+                    ag.data_criacao = DateTime.UtcNow;
+                    _context.agendamentos.Add(ag);
+                    deDia = deDia.AddDays(dias.Value);
+                }
+            }
+            agendamentos.data_ate = agendamentos.data_de.AddMinutes(servico.duracao);
             _context.agendamentos.Add(agendamentos);
             await _context.SaveChangesAsync();
 

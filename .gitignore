@@ -16,3 +16,22 @@ bin/
 
 # Ignorar arquivos de configuração locais
 appsettings.Development.json
+/hairmony-api/obj/Debug/net9.0/hairmony-api.AssemblyInfo.cs
+/hairmony-api/obj/Debug/net9.0/hairmony-api.AssemblyInfoInputs.cache
+/hairmony-api/obj/Debug/net9.0/hairmony-api.assets.cache
+/hairmony-api/obj/Debug/net9.0/hairmony-api.csproj.AssemblyReference.cache
+/hairmony-api/obj/Debug/net9.0/hairmony-api.GeneratedMSBuildEditorConfig.editorconfig
+/hairmony-api/obj/hairmony-api.csproj.nuget.dgspec.json
+/hairmony-api/obj/hairmony-api.csproj.nuget.g.props
+/hairmony-api/obj/project.nuget.cache
+/hairmony-api/obj/project.assets.json
+/hairmony-api/obj/Debug/net9.0/hairmony-api.AssemblyInfo.cs
+/hairmony-api/obj/Debug/net9.0/hairmony-api.AssemblyInfoInputs.cache
+/hairmony-api/obj/Debug/net9.0/hairmony-api.assets.cache
+/hairmony-api/obj/Debug/net9.0/hairmony-api.csproj.AssemblyReference.cache
+/hairmony-api/obj/Debug/net9.0/hairmony-api.GeneratedMSBuildEditorConfig.editorconfig
+/hairmony-api/appsettings.Development.json
+/hairmony-api/obj/hairmony-api.csproj.nuget.dgspec.json
+/hairmony-api/obj/project.nuget.cache
+/hairmony-api/obj/hairmony-api.csproj.nuget.g.props
+/hairmony-api/obj/project.assets.json

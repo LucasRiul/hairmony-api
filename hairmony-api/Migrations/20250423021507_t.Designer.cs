@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using hairmony_api.Data;
@@ -11,9 +12,11 @@ using hairmony_api.Data;
 namespace hairmony_api.Migrations
 {
     [DbContext(typeof(hairmonyContext))]
-    partial class hairmonyContextModelSnapshot : ModelSnapshot
+    [Migration("20250423021507_t")]
+    partial class t
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,6 +57,14 @@ namespace hairmony_api.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("clienteId");
+
+                    b.HasIndex("colaboradorId");
+
+                    b.HasIndex("salaoId");
+
+                    b.HasIndex("servicoId");
+
                     b.ToTable("agendamentos");
                 });
 
@@ -79,6 +90,8 @@ namespace hairmony_api.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("salaoId");
+
                     b.ToTable("clientes");
                 });
 
@@ -102,6 +115,8 @@ namespace hairmony_api.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("id");
+
+                    b.HasIndex("salaoId");
 
                     b.ToTable("colaboradores");
                 });
@@ -152,7 +167,77 @@ namespace hairmony_api.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("salaoId");
+
                     b.ToTable("servicos");
+                });
+
+            modelBuilder.Entity("hairmony_api.Model.agendamentos", b =>
+                {
+                    b.HasOne("hairmony_api.Model.clientes", "cliente")
+                        .WithMany()
+                        .HasForeignKey("clienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hairmony_api.Model.colaboradores", "colaborador")
+                        .WithMany()
+                        .HasForeignKey("colaboradorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hairmony_api.Model.salao", "salao")
+                        .WithMany()
+                        .HasForeignKey("salaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hairmony_api.Model.servicos", "servico")
+                        .WithMany()
+                        .HasForeignKey("servicoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("cliente");
+
+                    b.Navigation("colaborador");
+
+                    b.Navigation("salao");
+
+                    b.Navigation("servico");
+                });
+
+            modelBuilder.Entity("hairmony_api.Model.clientes", b =>
+                {
+                    b.HasOne("hairmony_api.Model.salao", "salao")
+                        .WithMany()
+                        .HasForeignKey("salaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("salao");
+                });
+
+            modelBuilder.Entity("hairmony_api.Model.colaboradores", b =>
+                {
+                    b.HasOne("hairmony_api.Model.salao", "salao")
+                        .WithMany()
+                        .HasForeignKey("salaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("salao");
+                });
+
+            modelBuilder.Entity("hairmony_api.Model.servicos", b =>
+                {
+                    b.HasOne("hairmony_api.Model.salao", "salao")
+                        .WithMany()
+                        .HasForeignKey("salaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("salao");
                 });
 #pragma warning restore 612, 618
         }
