@@ -14,10 +14,5 @@ namespace hairmony_api.Model
         public int duracao { get; set; }
         public decimal preco { get; set; }
         public Guid salaoId { get; set; }
-
-        [JsonIgnore, NotMapped]
-        [ValidateNever]
-        public virtual salao salao { get; set; }
-
     }
 }

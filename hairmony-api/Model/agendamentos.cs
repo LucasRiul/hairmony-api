@@ -17,20 +17,5 @@ namespace hairmony_api.Model
         public Guid clienteId { get; set; }
         public Guid servicoId { get; set; }
         public Guid colaboradorId { get; set; }
-
-
-        [JsonIgnore, NotMapped]
-        [ValidateNever]
-        public virtual clientes cliente { get; set; }
-        [JsonIgnore, NotMapped]
-        [ValidateNever]
-        public virtual servicos servico { get; set; }
-        [JsonIgnore, NotMapped]
-        [ValidateNever]
-        public virtual colaboradores colaborador { get; set; }
-        [JsonIgnore, NotMapped]
-        [ValidateNever]
-        public virtual salao salao { get; set; }
-
     }
 }

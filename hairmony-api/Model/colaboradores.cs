@@ -13,11 +13,5 @@ namespace hairmony_api.Model
         public string nome { get; set; }
         public bool ativo { get; set; }
         public Guid salaoId { get; set; }
-
-        [JsonIgnore, NotMapped]
-        [ValidateNever]
-        public virtual salao salao { get; set; }
-
-
     }
 }

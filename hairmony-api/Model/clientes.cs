@@ -13,10 +13,5 @@ namespace hairmony_api.Model
         public string celular { get; set; }
         public DateTime data_criacao { get; set; }
         public Guid salaoId { get; set; }
-
-        [JsonIgnore, NotMapped]
-        [ValidateNever]
-        public virtual salao salao { get; set; }
-
     }
 }

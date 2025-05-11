@@ -45,7 +45,7 @@ namespace hairmony_api.Controllers
         // PUT: api/salao/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> Putsalao(Guid id, salao salao)
+        public async Task<IActionResult> Putsalao([FromRoute]Guid id, [FromBody] salao salao)
         {
             if (id != salao.id)
             {
