@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using hairmony_api.Data;
 using hairmony_api.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace hairmony_api.Controllers
 {
@@ -22,14 +23,14 @@ namespace hairmony_api.Controllers
         }
 
         // GET: api/servicos
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<servicos>>> Getservicos()
         {
             return await _context.servicos.ToListAsync();
         }
 
         // GET: api/servicos/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<servicos>> Getservicos(Guid id)
         {
             var servicos = await _context.servicos.FindAsync(id);
@@ -44,7 +45,7 @@ namespace hairmony_api.Controllers
 
         // PUT: api/servicos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize]
         public async Task<IActionResult> Putservicos(Guid id, servicos servicos)
         {
             if (id != servicos.id)
@@ -75,7 +76,7 @@ namespace hairmony_api.Controllers
 
         // POST: api/servicos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<ActionResult<servicos>> Postservicos(servicos servicos)
         {
             _context.servicos.Add(servicos);
@@ -85,7 +86,7 @@ namespace hairmony_api.Controllers
         }
 
         // DELETE: api/servicos/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> Deleteservicos(Guid id)
         {
             var servicos = await _context.servicos.FindAsync(id);

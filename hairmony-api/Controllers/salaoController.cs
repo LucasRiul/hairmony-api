@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using hairmony_api.Data;
 using hairmony_api.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace hairmony_api.Controllers
 {
@@ -22,14 +23,14 @@ namespace hairmony_api.Controllers
         }
 
         // GET: api/salao
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<salao>>> Getsalao()
         {
             return await _context.salao.ToListAsync();
         }
 
         // GET: api/salao/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<salao>> Getsalao(Guid id)
         {
             var salao = await _context.salao.FindAsync(id);
@@ -44,7 +45,7 @@ namespace hairmony_api.Controllers
 
         // PUT: api/salao/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize]
         public async Task<IActionResult> Putsalao([FromRoute]Guid id, [FromBody] salao salao)
         {
             if (id != salao.id)
@@ -75,7 +76,7 @@ namespace hairmony_api.Controllers
 
         // POST: api/salao
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<ActionResult<salao>> Postsalao(salao salao)
         {
             _context.salao.Add(salao);
@@ -85,7 +86,7 @@ namespace hairmony_api.Controllers
         }
 
         // DELETE: api/salao/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> Deletesalao(Guid id)
         {
             var salao = await _context.salao.FindAsync(id);

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using hairmony_api.Data;
 using hairmony_api.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace hairmony_api.Controllers
 {
@@ -22,14 +23,14 @@ namespace hairmony_api.Controllers
         }
 
         // GET: api/colaboradores
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<colaboradores>>> Getcolaboradores()
         {
             return await _context.colaboradores.ToListAsync();
         }
 
         // GET: api/colaboradores/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<colaboradores>> Getcolaboradores(Guid id)
         {
             var colaboradores = await _context.colaboradores.FindAsync(id);
@@ -44,7 +45,7 @@ namespace hairmony_api.Controllers
 
         // PUT: api/colaboradores/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize]
         public async Task<IActionResult> Putcolaboradores(Guid id, colaboradores colaboradores)
         {
             if (id != colaboradores.id)
@@ -75,7 +76,7 @@ namespace hairmony_api.Controllers
 
         // POST: api/colaboradores
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<ActionResult<colaboradores>> Postcolaboradores(colaboradores colaboradores)
         {
             _context.colaboradores.Add(colaboradores);
@@ -85,7 +86,7 @@ namespace hairmony_api.Controllers
         }
 
         // DELETE: api/colaboradores/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> Deletecolaboradores(Guid id)
         {
             var colaboradores = await _context.colaboradores.FindAsync(id);

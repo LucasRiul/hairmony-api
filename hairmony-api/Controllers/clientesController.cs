@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using hairmony_api.Data;
 using hairmony_api.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace hairmony_api.Controllers
 {
@@ -22,14 +23,14 @@ namespace hairmony_api.Controllers
         }
 
         // GET: api/clientes
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<clientes>>> Getclientes()
         {
             return await _context.clientes.ToListAsync();
         }
 
         // GET: api/clientes/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<clientes>> Getclientes(Guid id)
         {
             var clientes = await _context.clientes.FindAsync(id);
@@ -44,7 +45,7 @@ namespace hairmony_api.Controllers
 
         // PUT: api/clientes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize]
         public async Task<IActionResult> Putclientes(Guid id, clientes clientes)
         {
             if (id != clientes.id)
@@ -75,7 +76,7 @@ namespace hairmony_api.Controllers
 
         // POST: api/clientes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<ActionResult<clientes>> Postclientes(clientes clientes)
         {
             _context.clientes.Add(clientes);
@@ -85,7 +86,7 @@ namespace hairmony_api.Controllers
         }
 
         // DELETE: api/clientes/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> Deleteclientes(Guid id)
         {
             var clientes = await _context.clientes.FindAsync(id);

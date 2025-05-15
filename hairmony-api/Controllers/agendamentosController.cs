@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using hairmony_api.Data;
 using hairmony_api.Model;
 using NuGet.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace hairmony_api.Controllers
 {
@@ -23,14 +24,14 @@ namespace hairmony_api.Controllers
         }
 
         // GET: api/agendamentos
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<agendamentos>>> Getagendamentos()
         {
             return await _context.agendamentos.ToListAsync();
         }
 
         // GET: api/agendamentos/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<agendamentos>> Getagendamentos(Guid id)
         {
             var agendamentos = await _context.agendamentos.FindAsync(id);
@@ -45,7 +46,7 @@ namespace hairmony_api.Controllers
 
         // PUT: api/agendamentos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize]
         public async Task<IActionResult> Putagendamentos(Guid id, agendamentos agendamentos)
         {
             if (id != agendamentos.id)
@@ -76,11 +77,19 @@ namespace hairmony_api.Controllers
 
         // POST: api/agendamentos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<ActionResult<agendamentos>> Postagendamentos(agendamentos agendamentos, bool repete, double? dias)
         {
             var servico = await _context.servicos.FindAsync(agendamentos.servicoId);
-            if (repete && dias != null && servico != null)
+            var cliente = await _context.clientes.FindAsync(agendamentos.clienteId);
+            var colaborador = await _context.colaboradores.FindAsync(agendamentos.colaboradorId);
+            var salao = await _context.salao.FindAsync(agendamentos.salaoId);
+            if (salao == null || servico == null || cliente == null  || colaborador == null )
+            {
+                return BadRequest();
+            }
+
+            if (repete && dias != null)
             {
                 var deDia = agendamentos.data_de;
                 var ateDia = new DateTime(DateTime.Now.Year, 12, 31); // Até o fim do ano
@@ -89,17 +98,18 @@ namespace hairmony_api.Controllers
                     //cria novo agendamento
                     var ag = new agendamentos();
                     ag.data_de = deDia.AddDays(dias.Value);
-                    ag.data_ate = ag.data_de.AddMinutes(servico.duracao);
+                    ag.data_ate = ag.data_de.AddMinutes(servico!.duracao);
                     ag.clienteId = agendamentos.clienteId;
                     ag.servicoId = agendamentos.servicoId;
                     ag.salaoId = agendamentos.salaoId;
                     ag.colaboradorId = agendamentos.colaboradorId;
                     ag.data_criacao = DateTime.UtcNow;
+                    ag.concluido = false;
                     _context.agendamentos.Add(ag);
                     deDia = deDia.AddDays(dias.Value);
                 }
             }
-            agendamentos.data_ate = agendamentos.data_de.AddMinutes(servico.duracao);
+            agendamentos.data_ate = agendamentos.data_de.AddMinutes(servico!.duracao);
             _context.agendamentos.Add(agendamentos);
             await _context.SaveChangesAsync();
 
@@ -107,7 +117,7 @@ namespace hairmony_api.Controllers
         }
 
         // DELETE: api/agendamentos/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> Deleteagendamentos(Guid id)
         {
             var agendamentos = await _context.agendamentos.FindAsync(id);
