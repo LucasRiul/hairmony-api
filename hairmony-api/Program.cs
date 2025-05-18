@@ -53,11 +53,23 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 #endregion
 
+#region CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy => policy
+            .WithOrigins("http://localhost:4230") // ou "*" se for para testes
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+    );
+});
+#endregion
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 app.UseAuthentication();
 app.MapOpenApi();
-
+app.UseCors("AllowAngularApp");
 app.UseSwagger();
 app.UseSwaggerUI();
 
