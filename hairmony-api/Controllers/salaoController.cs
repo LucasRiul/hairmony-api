@@ -76,7 +76,7 @@ namespace hairmony_api.Controllers
 
         // POST: api/salao
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost, Authorize]
+        [HttpPost]
         public async Task<ActionResult<salao>> Postsalao(salao salao)
         {
             salao.senha = BCrypt.Net.BCrypt.HashPassword(salao.senha);
@@ -87,7 +87,7 @@ namespace hairmony_api.Controllers
         }
 
         // DELETE: api/salao/5
-        [HttpDelete("{id}"), Authorize]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Deletesalao(Guid id)
         {
             var salao = await _context.salao.FindAsync(id);

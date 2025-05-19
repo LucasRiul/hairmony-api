@@ -12,7 +12,7 @@ namespace hairmony_api.Model
         public DateTime data_de { get; set; }
         public DateTime data_ate { get; set; }
         public bool concluido { get; set; }
-        public DateTime data_criacao { get; set; }
+        public DateTime data_criacao { get; set; } = DateTime.UtcNow;
         public Guid salaoId { get; set; }
         public Guid clienteId { get; set; }
         public Guid servicoId { get; set; }
