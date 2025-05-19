@@ -24,8 +24,6 @@ public class AuthController : ControllerBase
     public IActionResult Login([FromBody] LoginDto loginRequest)
     {
         // 1. Validar as credenciais do usuário
-        // Esta é uma lógica de exemplo. Você deve implementar a validação 
-        // contra seu banco de dados, verificando o hash da senha.
         var user = _loginService.ValidarUsuario(loginRequest.UserName, loginRequest.Password);
         if (user == null)
         {
@@ -65,6 +63,6 @@ public class AuthController : ControllerBase
         var tokenString = tokenHandler.WriteToken(token);
 
         // 6. Retornar o token
-        return Ok(new { token = tokenString });
+        return Ok(new { token = tokenString, salao = salaoId });
     }
 }

@@ -13,12 +13,21 @@ namespace hairmony_api.Services
         }
         public salao? ValidarUsuario(string username, string senha)
         {
-            var usuario = _context.salao.FirstOrDefault(x => x.nome.ToLower() == username.ToLower() && x.senha == senha);
-            if (usuario != null)
+            var usuario = _context.salao.FirstOrDefault(x => x.nome.ToLower() == username.ToLower());
+
+            if (usuario == null)
+            {
+                return null;
+            }
+            bool senhaValida = BCrypt.Net.BCrypt.Verify(senha, usuario.senha);
+            if (senhaValida) 
             {
                 return usuario;
+            } 
+            else
+            {
+                return null;
             }
-            return null;
         }
     }
 }
