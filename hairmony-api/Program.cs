@@ -43,9 +43,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(secretKey),
         ValidateIssuer = true,
-        ValidIssuer = jwtSettings["Issuer"],
+        ValidIssuer = Environment.GetEnvironmentVariable("ISSUER"),
         ValidateAudience = true,
-        ValidAudience = jwtSettings["Audience"],
+        ValidAudience = Environment.GetEnvironmentVariable("AUDIENCE"),
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero // Remove a tolerância de tempo padrão
     };
