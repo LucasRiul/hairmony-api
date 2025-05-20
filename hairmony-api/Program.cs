@@ -27,7 +27,7 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 #region jwt
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 //var secretKey = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]); //dev
-var secretKey = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ?? jwtSettings["SecretKey"]); //dev
+var secretKey = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new Exception("Chave secreta JWT não encontrada.")); //dev
 
 builder.Services.AddAuthentication(options =>
 {
