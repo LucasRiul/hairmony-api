@@ -192,7 +192,7 @@ namespace hairmony_api.Controllers
             }
         }
 
-        public string AplicarMascara(string tel)
+        private string AplicarMascara(string tel)
         {
             if (string.IsNullOrEmpty(tel))
             {

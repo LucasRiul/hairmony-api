@@ -15,7 +15,7 @@ builder.Services.AddDbContext<hairmonyContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -68,7 +68,8 @@ builder.Services.AddCors(options =>
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 app.UseAuthentication();
-app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseCors("AllowAngularApp");
 app.UseSwagger();
 app.UseSwaggerUI();
