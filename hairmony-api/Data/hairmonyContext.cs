@@ -8,7 +8,7 @@ namespace hairmony_api.Data
         public hairmonyContext(DbContextOptions<hairmonyContext> options)
         : base(options)
         {
-
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
         public DbSet<agendamentos> agendamentos{ get; set; }
         public DbSet<clientes> clientes { get; set; }

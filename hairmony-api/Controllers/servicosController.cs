@@ -26,7 +26,7 @@ namespace hairmony_api.Controllers
         [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<servicos>>> Getservicos()
         {
-            return await _context.servicos.ToListAsync();
+            return await _context.servicos.OrderBy(x => x.nome).ToListAsync();
         }
 
         // GET: api/servicos/5
@@ -79,6 +79,7 @@ namespace hairmony_api.Controllers
         [HttpPost, Authorize]
         public async Task<ActionResult<servicos>> Postservicos(servicos servicos)
         {
+            servicos.data_criacao = DateTime.Now;
             _context.servicos.Add(servicos);
             await _context.SaveChangesAsync();
 

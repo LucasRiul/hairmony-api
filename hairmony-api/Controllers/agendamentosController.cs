@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using ClosedXML.Excel;
 using hairmony_api.Data;
 using hairmony_api.Model;
-using NuGet.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace hairmony_api.Controllers
 {
@@ -80,6 +75,7 @@ namespace hairmony_api.Controllers
         [HttpPost, Authorize]
         public async Task<ActionResult<agendamentos>> Postagendamentos(agendamentos agendamentos, bool repete, double? dias)
         {
+            agendamentos.data_de = agendamentos.data_de.AddHours(-3);
             var servico = await _context.servicos.FindAsync(agendamentos.servicoId);
             var cliente = await _context.clientes.FindAsync(agendamentos.clienteId);
             var colaborador = await _context.colaboradores.FindAsync(agendamentos.colaboradorId);
@@ -103,7 +99,7 @@ namespace hairmony_api.Controllers
                     ag.servicoId = agendamentos.servicoId;
                     ag.salaoId = agendamentos.salaoId;
                     ag.colaboradorId = agendamentos.colaboradorId;
-                    ag.data_criacao = DateTime.UtcNow;
+                    ag.data_criacao = DateTime.Now;
                     ag.concluido = false;
                     _context.agendamentos.Add(ag);
                     deDia = deDia.AddDays(dias.Value);
@@ -135,6 +131,89 @@ namespace hairmony_api.Controllers
         private bool agendamentosExists(Guid id)
         {
             return _context.agendamentos.Any(e => e.id == id);
+        }
+
+        [HttpGet("relatorio-semanal"), Authorize]
+        public async Task<IActionResult> GerarRelatorioSemanal()
+        {
+            try
+            {
+                var inicioSemana = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1); // Segunda
+                var fimSemana = inicioSemana.AddDays(6); // Domingo
+
+                var agendamentos = await _context.agendamentos
+                    .Where(a => a.data_de.Date >= inicioSemana && a.data_de.Date <= fimSemana)
+                    .OrderBy(x => x.colaboradorId).ThenBy(x => x.data_de)
+                    .ToListAsync();
+
+
+                using var workbook = new XLWorkbook();
+                var worksheet = workbook.Worksheets.Add("Agendamentos da Semana");
+
+                // Cabeçalho
+                worksheet.Cell(1, 1).Value = "Colaborador";
+                worksheet.Cell(1, 2).Value = "Data";
+                worksheet.Cell(1, 3).Value = "Hora";
+                worksheet.Cell(1, 4).Value = "Cliente";
+                worksheet.Cell(1, 5).Value = "WhatsApp";
+                worksheet.Cell(1, 6).Value = "Serviço";
+
+                int row = 2;
+                foreach (var ag in agendamentos)
+                {
+                    var servico = await _context.servicos.FindAsync(ag.servicoId);
+                    var cliente = await _context.clientes.FindAsync(ag.clienteId);
+                    var colaborador = await _context.colaboradores.FindAsync(ag.colaboradorId);
+                    if (servico == null || cliente == null || colaborador == null)
+                    {
+                        return BadRequest();
+                    }
+                    worksheet.Cell(row, 1).Value = colaborador.nome.ToUpper();
+                    worksheet.Cell(row, 2).Value = ag.data_de.ToString("dd/MM/yyyy");
+                    worksheet.Cell(row, 3).Value = $"{ag.data_de.ToString("HH:mm")} até {ag.data_ate.ToString("HH:mm")}";
+                    worksheet.Cell(row, 4).Value = cliente.nome;
+                    worksheet.Cell(row, 5).Value = AplicarMascara(cliente.celular);
+                    worksheet.Cell(row, 6).Value = servico.nome;
+                    row++;
+                }
+
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+
+                return File(stream.ToArray(),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "RelatórioSemanal.xlsx");
+
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        public string AplicarMascara(string tel)
+        {
+            if (string.IsNullOrEmpty(tel))
+            {
+                return string.Empty;
+            }
+            if (tel.Length == 11)
+            {
+                return Convert.ToUInt64(tel).ToString(@"(00) 00000-0000");
+            }
+            // Telefone com DDD e 8 dígitos: (11) 1234-5678
+            if (tel.Length == 10)
+                return Convert.ToUInt64(tel).ToString(@"(00) 0000-0000");
+
+            // Apenas número local com 9 dígitos: 91234-5678
+            if (tel.Length == 9)
+                return Convert.ToUInt64(tel).ToString(@"00000-0000");
+
+            // Apenas número local com 8 dígitos: 1234-5678
+            if (tel.Length == 8)
+                return Convert.ToUInt64(tel).ToString(@"0000-0000");
+            return tel;
         }
     }
 }

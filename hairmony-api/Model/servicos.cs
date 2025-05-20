@@ -9,7 +9,7 @@ namespace hairmony_api.Model
     {
         [Key]
         public Guid id { get; set; } = Guid.NewGuid();
-        public DateTime data_criacao { get; set; } = DateTime.UtcNow;
+        public DateTime data_criacao { get; set; }
         public string nome { get; set; }
         public int duracao { get; set; }
         public decimal preco { get; set; }

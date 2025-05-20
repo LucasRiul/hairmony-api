@@ -80,6 +80,7 @@ namespace hairmony_api.Controllers
         public async Task<ActionResult<salao>> Postsalao(salao salao)
         {
             salao.senha = BCrypt.Net.BCrypt.HashPassword(salao.senha);
+            salao.data_criacao = DateTime.Now;
             _context.salao.Add(salao);
             await _context.SaveChangesAsync();
 
