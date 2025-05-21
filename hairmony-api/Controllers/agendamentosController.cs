@@ -220,7 +220,7 @@ namespace hairmony_api.Controllers
                     worksheet.Cell(row, 4).Value = cliente.nome;
                     worksheet.Cell(row, 5).Value = AplicarMascara(cliente.celular);
                     worksheet.Cell(row, 6).Value = servico.nome;
-                    worksheet.Cell(row, 6).Value = servico.preco;
+                    worksheet.Cell(row, 7).Value = servico.preco;
                     row++;
                 }
 
