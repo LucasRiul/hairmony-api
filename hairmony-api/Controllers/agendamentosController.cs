@@ -22,21 +22,39 @@ namespace hairmony_api.Controllers
         [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<agendamentos>>> Getagendamentos()
         {
-            return await _context.agendamentos.ToListAsync();
+            try
+            {
+                return await _context.agendamentos.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // GET: api/agendamentos/5
         [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<agendamentos>> Getagendamentos(Guid id)
         {
-            var agendamentos = await _context.agendamentos.FindAsync(id);
-
-            if (agendamentos == null)
+            try
             {
-                return NotFound();
-            }
+                var agendamentos = await _context.agendamentos.FindAsync(id);
 
-            return agendamentos;
+                if (agendamentos == null)
+                {
+                    return NotFound();
+                }
+
+                return agendamentos;
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // PUT: api/agendamentos/5
@@ -55,7 +73,7 @@ namespace hairmony_api.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 if (!agendamentosExists(id))
                 {
@@ -63,6 +81,8 @@ namespace hairmony_api.Controllers
                 }
                 else
                 {
+                    return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
                     throw;
                 }
             }
@@ -75,57 +95,75 @@ namespace hairmony_api.Controllers
         [HttpPost, Authorize]
         public async Task<ActionResult<agendamentos>> Postagendamentos(agendamentos agendamentos, bool repete, double? dias)
         {
-            agendamentos.data_de = agendamentos.data_de.AddHours(-3);
-            var servico = await _context.servicos.FindAsync(agendamentos.servicoId);
-            var cliente = await _context.clientes.FindAsync(agendamentos.clienteId);
-            var colaborador = await _context.colaboradores.FindAsync(agendamentos.colaboradorId);
-            var salao = await _context.salao.FindAsync(agendamentos.salaoId);
-            if (salao == null || servico == null || cliente == null  || colaborador == null )
+            try
             {
-                return BadRequest();
-            }
-
-            if (repete && dias != null)
-            {
-                var deDia = agendamentos.data_de;
-                var ateDia = new DateTime(DateTime.Now.Year, 12, 31); // Até o fim do ano
-                while (deDia < ateDia)
+                agendamentos.data_de = agendamentos.data_de.AddHours(-3);
+                var servico = await _context.servicos.FindAsync(agendamentos.servicoId);
+                var cliente = await _context.clientes.FindAsync(agendamentos.clienteId);
+                var colaborador = await _context.colaboradores.FindAsync(agendamentos.colaboradorId);
+                var salao = await _context.salao.FindAsync(agendamentos.salaoId);
+                if (salao == null || servico == null || cliente == null || colaborador == null)
                 {
-                    //cria novo agendamento
-                    var ag = new agendamentos();
-                    ag.data_de = deDia.AddDays(dias.Value);
-                    ag.data_ate = ag.data_de.AddMinutes(servico!.duracao);
-                    ag.clienteId = agendamentos.clienteId;
-                    ag.servicoId = agendamentos.servicoId;
-                    ag.salaoId = agendamentos.salaoId;
-                    ag.colaboradorId = agendamentos.colaboradorId;
-                    ag.data_criacao = DateTime.Now;
-                    ag.concluido = false;
-                    _context.agendamentos.Add(ag);
-                    deDia = deDia.AddDays(dias.Value);
+                    return BadRequest();
                 }
-            }
-            agendamentos.data_ate = agendamentos.data_de.AddMinutes(servico!.duracao);
-            _context.agendamentos.Add(agendamentos);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("Getagendamentos", new { id = agendamentos.id }, agendamentos);
+                if (repete && dias != null)
+                {
+                    var deDia = agendamentos.data_de;
+                    var ateDia = new DateTime(DateTime.Now.Year, 12, 31); // Até o fim do ano
+                    while (deDia < ateDia)
+                    {
+                        //cria novo agendamento
+                        var ag = new agendamentos();
+                        ag.data_de = deDia.AddDays(dias.Value);
+                        ag.data_ate = ag.data_de.AddMinutes(servico!.duracao);
+                        ag.clienteId = agendamentos.clienteId;
+                        ag.servicoId = agendamentos.servicoId;
+                        ag.salaoId = agendamentos.salaoId;
+                        ag.colaboradorId = agendamentos.colaboradorId;
+                        ag.data_criacao = DateTime.Now;
+                        ag.concluido = false;
+                        _context.agendamentos.Add(ag);
+                        deDia = deDia.AddDays(dias.Value);
+                    }
+                }
+                agendamentos.data_ate = agendamentos.data_de.AddMinutes(servico!.duracao);
+                _context.agendamentos.Add(agendamentos);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("Getagendamentos", new { id = agendamentos.id }, agendamentos);
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // DELETE: api/agendamentos/5
         [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> Deleteagendamentos(Guid id)
         {
-            var agendamentos = await _context.agendamentos.FindAsync(id);
-            if (agendamentos == null)
+            try
             {
-                return NotFound();
+                var agendamentos = await _context.agendamentos.FindAsync(id);
+                if (agendamentos == null)
+                {
+                    return NotFound();
+                }
+
+                _context.agendamentos.Remove(agendamentos);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
 
-            _context.agendamentos.Remove(agendamentos);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+                throw;
+            }
         }
 
         private bool agendamentosExists(Guid id)
@@ -188,7 +226,8 @@ namespace hairmony_api.Controllers
             }
             catch (Exception ex)
             {
-                return Problem(ex.Message);
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
             }
         }
 

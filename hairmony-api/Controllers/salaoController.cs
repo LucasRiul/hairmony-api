@@ -26,21 +26,37 @@ namespace hairmony_api.Controllers
         [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<salao>>> Getsalao()
         {
-            return await _context.salao.ToListAsync();
+            try
+            {
+                return await _context.salao.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+                throw;
+            }
         }
 
         // GET: api/salao/5
         [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<salao>> Getsalao(Guid id)
         {
-            var salao = await _context.salao.FindAsync(id);
-
-            if (salao == null)
+            try
             {
-                return NotFound();
-            }
+                var salao = await _context.salao.FindAsync(id);
 
-            return salao;
+                if (salao == null)
+                {
+                    return NotFound();
+                }
+
+                return salao;
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+                throw;
+            }
         }
 
         // PUT: api/salao/5
@@ -59,7 +75,7 @@ namespace hairmony_api.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 if (!salaoExists(id))
                 {
@@ -67,7 +83,7 @@ namespace hairmony_api.Controllers
                 }
                 else
                 {
-                    throw;
+                    return Problem($"{ex.Message} - {ex.InnerException?.Message}");
                 }
             }
 
@@ -79,28 +95,44 @@ namespace hairmony_api.Controllers
         [HttpPost]
         public async Task<ActionResult<salao>> Postsalao(salao salao)
         {
-            salao.senha = BCrypt.Net.BCrypt.HashPassword(salao.senha);
-            salao.data_criacao = DateTime.Now;
-            _context.salao.Add(salao);
-            await _context.SaveChangesAsync();
+            try
+            {
+                salao.senha = BCrypt.Net.BCrypt.HashPassword(salao.senha);
+                salao.data_criacao = DateTime.Now;
+                _context.salao.Add(salao);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("Getsalao", new { id = salao.id }, salao);
+                return CreatedAtAction("Getsalao", new { id = salao.id }, salao);
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+                throw;
+            }
         }
 
         // DELETE: api/salao/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Deletesalao(Guid id)
         {
-            var salao = await _context.salao.FindAsync(id);
-            if (salao == null)
+            try
             {
-                return NotFound();
+                var salao = await _context.salao.FindAsync(id);
+                if (salao == null)
+                {
+                    return NotFound();
+                }
+
+                _context.salao.Remove(salao);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
-
-            _context.salao.Remove(salao);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+                throw;
+            }
         }
 
         private bool salaoExists(Guid id)

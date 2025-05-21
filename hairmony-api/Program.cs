@@ -26,8 +26,8 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 
 #region jwt
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-//var secretKey = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]); //dev
-var secretKey = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new Exception("Chave secreta JWT não encontrada.")); //dev
+var secretKey = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]); //dev
+//var secretKey = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new Exception("Chave secreta JWT não encontrada."));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -43,9 +43,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(secretKey),
         ValidateIssuer = true,
-        ValidIssuer = Environment.GetEnvironmentVariable("ISSUER"),
+        ValidIssuer = Environment.GetEnvironmentVariable("ISSUER") ?? jwtSettings["Issuer"],
         ValidateAudience = true,
-        ValidAudience = Environment.GetEnvironmentVariable("AUDIENCE"),
+        ValidAudience = Environment.GetEnvironmentVariable("AUDIENCE") ?? jwtSettings["Audience"],
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero // Remove a tolerância de tempo padrão
     };

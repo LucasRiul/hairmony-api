@@ -26,21 +26,39 @@ namespace hairmony_api.Controllers
         [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<colaboradores>>> Getcolaboradores()
         {
-            return await _context.colaboradores.OrderBy(x => x.nome).ToListAsync();
+            try
+            {
+                return await _context.colaboradores.OrderBy(x => x.nome).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // GET: api/colaboradores/5
         [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<colaboradores>> Getcolaboradores(Guid id)
         {
-            var colaboradores = await _context.colaboradores.FindAsync(id);
-
-            if (colaboradores == null)
+            try
             {
-                return NotFound();
-            }
+                var colaboradores = await _context.colaboradores.FindAsync(id);
 
-            return colaboradores;
+                if (colaboradores == null)
+                {
+                    return NotFound();
+                }
+
+                return colaboradores;
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // PUT: api/colaboradores/5
@@ -59,7 +77,7 @@ namespace hairmony_api.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 if (!colaboradoresExists(id))
                 {
@@ -67,6 +85,8 @@ namespace hairmony_api.Controllers
                 }
                 else
                 {
+                    return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
                     throw;
                 }
             }
@@ -79,27 +99,45 @@ namespace hairmony_api.Controllers
         [HttpPost, Authorize]
         public async Task<ActionResult<colaboradores>> Postcolaboradores(colaboradores colaboradores)
         {
-            colaboradores.data_criacao = DateTime.Now;
-            _context.colaboradores.Add(colaboradores);
-            await _context.SaveChangesAsync();
+            try
+            {
+                colaboradores.data_criacao = DateTime.Now;
+                _context.colaboradores.Add(colaboradores);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("Getcolaboradores", new { id = colaboradores.id }, colaboradores);
+                return CreatedAtAction("Getcolaboradores", new { id = colaboradores.id }, colaboradores);
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // DELETE: api/colaboradores/5
         [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> Deletecolaboradores(Guid id)
         {
-            var colaboradores = await _context.colaboradores.FindAsync(id);
-            if (colaboradores == null)
+            try
             {
-                return NotFound();
+                var colaboradores = await _context.colaboradores.FindAsync(id);
+                if (colaboradores == null)
+                {
+                    return NotFound();
+                }
+
+                _context.colaboradores.Remove(colaboradores);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
 
-            _context.colaboradores.Remove(colaboradores);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+                throw;
+            }
         }
 
         private bool colaboradoresExists(Guid id)
