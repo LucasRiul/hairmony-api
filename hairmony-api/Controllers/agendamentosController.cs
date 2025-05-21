@@ -128,6 +128,7 @@ namespace hairmony_api.Controllers
                     }
                 }
                 agendamentos.data_ate = agendamentos.data_de.AddMinutes(servico!.duracao);
+                agendamentos.data_criacao = DateTime.Now;
                 _context.agendamentos.Add(agendamentos);
                 await _context.SaveChangesAsync();
 
