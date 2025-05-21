@@ -13,6 +13,6 @@ namespace hairmony_api.Model
         public string nome { get; set; }
         public int duracao { get; set; }
         public decimal preco { get; set; }
-        public Guid salaoId { get; set; }
+        public Guid salaoid { get; set; }
     }
 }

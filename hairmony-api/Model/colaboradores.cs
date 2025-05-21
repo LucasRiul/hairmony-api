@@ -12,6 +12,6 @@ namespace hairmony_api.Model
         public DateTime data_criacao { get; set; } 
         public string nome { get; set; }
         public bool ativo { get; set; }
-        public Guid salaoId { get; set; }
+        public Guid salaoid { get; set; }
     }
 }

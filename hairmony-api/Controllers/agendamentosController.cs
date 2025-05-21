@@ -98,10 +98,10 @@ namespace hairmony_api.Controllers
             try
             {
                 agendamentos.data_de = agendamentos.data_de.AddHours(-3);
-                var servico = await _context.servicos.FindAsync(agendamentos.servicoId);
-                var cliente = await _context.clientes.FindAsync(agendamentos.clienteId);
-                var colaborador = await _context.colaboradores.FindAsync(agendamentos.colaboradorId);
-                var salao = await _context.salao.FindAsync(agendamentos.salaoId);
+                var servico = await _context.servicos.FindAsync(agendamentos.servicoid);
+                var cliente = await _context.clientes.FindAsync(agendamentos.clienteid);
+                var colaborador = await _context.colaboradores.FindAsync(agendamentos.colaboradorid);
+                var salao = await _context.salao.FindAsync(agendamentos.salaoid);
                 if (salao == null || servico == null || cliente == null || colaborador == null)
                 {
                     return BadRequest();
@@ -117,10 +117,10 @@ namespace hairmony_api.Controllers
                         var ag = new agendamentos();
                         ag.data_de = deDia.AddDays(dias.Value);
                         ag.data_ate = ag.data_de.AddMinutes(servico!.duracao);
-                        ag.clienteId = agendamentos.clienteId;
-                        ag.servicoId = agendamentos.servicoId;
-                        ag.salaoId = agendamentos.salaoId;
-                        ag.colaboradorId = agendamentos.colaboradorId;
+                        ag.clienteid= agendamentos.clienteid;
+                        ag.servicoid= agendamentos.servicoid;
+                        ag.salaoid= agendamentos.salaoid;
+                        ag.colaboradorid = agendamentos.colaboradorid;
                         ag.data_criacao = DateTime.Now;
                         ag.concluido = false;
                         _context.agendamentos.Add(ag);
@@ -181,7 +181,7 @@ namespace hairmony_api.Controllers
 
                 var agendamentos = await _context.agendamentos
                     .Where(a => a.data_de.Date >= inicioSemana && a.data_de.Date <= fimSemana)
-                    .OrderBy(x => x.colaboradorId).ThenBy(x => x.data_de)
+                    .OrderBy(x => x.colaboradorid).ThenBy(x => x.data_de)
                     .ToListAsync();
 
 
@@ -199,9 +199,9 @@ namespace hairmony_api.Controllers
                 int row = 2;
                 foreach (var ag in agendamentos)
                 {
-                    var servico = await _context.servicos.FindAsync(ag.servicoId);
-                    var cliente = await _context.clientes.FindAsync(ag.clienteId);
-                    var colaborador = await _context.colaboradores.FindAsync(ag.colaboradorId);
+                    var servico = await _context.servicos.FindAsync(ag.servicoid);
+                    var cliente = await _context.clientes.FindAsync(ag.clienteid);
+                    var colaborador = await _context.colaboradores.FindAsync(ag.colaboradorid);
                     if (servico == null || cliente == null || colaborador == null)
                     {
                         return BadRequest();
