@@ -26,21 +26,39 @@ namespace hairmony_api.Controllers
         [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<servicos>>> Getservicos()
         {
-            return await _context.servicos.OrderBy(x => x.nome).ToListAsync();
+            try
+            {
+                return await _context.servicos.OrderBy(x => x.nome).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // GET: api/servicos/5
         [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<servicos>> Getservicos(Guid id)
         {
-            var servicos = await _context.servicos.FindAsync(id);
-
-            if (servicos == null)
+            try
             {
-                return NotFound();
-            }
+                var servicos = await _context.servicos.FindAsync(id);
 
-            return servicos;
+                if (servicos == null)
+                {
+                    return NotFound();
+                }
+
+                return servicos;
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // PUT: api/servicos/5
@@ -59,7 +77,7 @@ namespace hairmony_api.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 if (!servicosExists(id))
                 {
@@ -67,6 +85,8 @@ namespace hairmony_api.Controllers
                 }
                 else
                 {
+                    return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
                     throw;
                 }
             }
@@ -79,27 +99,45 @@ namespace hairmony_api.Controllers
         [HttpPost, Authorize]
         public async Task<ActionResult<servicos>> Postservicos(servicos servicos)
         {
-            servicos.data_criacao = DateTime.Now;
-            _context.servicos.Add(servicos);
-            await _context.SaveChangesAsync();
+            try
+            {
+                servicos.data_criacao = DateTime.Now;
+                _context.servicos.Add(servicos);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("Getservicos", new { id = servicos.id }, servicos);
+                return CreatedAtAction("Getservicos", new { id = servicos.id }, servicos);
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // DELETE: api/servicos/5
         [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> Deleteservicos(Guid id)
         {
-            var servicos = await _context.servicos.FindAsync(id);
-            if (servicos == null)
+            try
             {
-                return NotFound();
+                var servicos = await _context.servicos.FindAsync(id);
+                if (servicos == null)
+                {
+                    return NotFound();
+                }
+
+                _context.servicos.Remove(servicos);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
 
-            _context.servicos.Remove(servicos);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+                throw;
+            }
         }
 
         private bool servicosExists(Guid id)

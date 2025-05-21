@@ -26,21 +26,39 @@ namespace hairmony_api.Controllers
         [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<clientes>>> Getclientes()
         {
-            return await _context.clientes.OrderBy(x => x.nome).ToListAsync();
+            try
+            {
+                return await _context.clientes.OrderBy(x => x.nome).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // GET: api/clientes/5
         [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<clientes>> Getclientes(Guid id)
         {
-            var clientes = await _context.clientes.FindAsync(id);
-
-            if (clientes == null)
+            try
             {
-                return NotFound();
-            }
+                var clientes = await _context.clientes.FindAsync(id);
 
-            return clientes;
+                if (clientes == null)
+                {
+                    return NotFound();
+                }
+
+                return clientes;
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // PUT: api/clientes/5
@@ -59,7 +77,7 @@ namespace hairmony_api.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 if (!clientesExists(id))
                 {
@@ -67,6 +85,8 @@ namespace hairmony_api.Controllers
                 }
                 else
                 {
+                    return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
                     throw;
                 }
             }
@@ -79,27 +99,45 @@ namespace hairmony_api.Controllers
         [HttpPost, Authorize]
         public async Task<ActionResult<clientes>> Postclientes(clientes clientes)
         {
-            clientes.data_criacao = DateTime.Now;
-            _context.clientes.Add(clientes);
-            await _context.SaveChangesAsync();
+            try
+            {
+                clientes.data_criacao = DateTime.Now;
+                _context.clientes.Add(clientes);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("Getclientes", new { id = clientes.id }, clientes);
+                return CreatedAtAction("Getclientes", new { id = clientes.id }, clientes);
+            }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
+
+                throw;
+            }
         }
 
         // DELETE: api/clientes/5
         [HttpDelete("{id}"), Authorize]
         public async Task<IActionResult> Deleteclientes(Guid id)
         {
-            var clientes = await _context.clientes.FindAsync(id);
-            if (clientes == null)
+            try
             {
-                return NotFound();
+                var clientes = await _context.clientes.FindAsync(id);
+                if (clientes == null)
+                {
+                    return NotFound();
+                }
+
+                _context.clientes.Remove(clientes);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
+            catch (Exception ex)
+            {
+                return Problem($"{ex.Message} - {ex.InnerException?.Message}");
 
-            _context.clientes.Remove(clientes);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+                throw;
+            }
         }
 
         private bool clientesExists(Guid id)

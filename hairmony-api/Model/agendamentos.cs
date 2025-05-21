@@ -13,9 +13,9 @@ namespace hairmony_api.Model
         public DateTime data_ate { get; set; }
         public bool concluido { get; set; }
         public DateTime data_criacao { get; set; } 
-        public Guid salaoId { get; set; }
-        public Guid clienteId { get; set; }
-        public Guid servicoId { get; set; }
-        public Guid colaboradorId { get; set; }
+        public Guid salaoid { get; set; }
+        public Guid clienteid { get; set; }
+        public Guid servicoid { get; set; }
+        public Guid colaboradorid { get; set; }
     }
 }

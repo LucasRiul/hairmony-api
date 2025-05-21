@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<hairmonyContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen();
@@ -27,7 +27,7 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 #region jwt
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 //var secretKey = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]); //dev
-var secretKey = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new Exception("Chave secreta JWT não encontrada.")); //dev
+var secretKey = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ?? jwtSettings["SecretKey"] ?? throw new Exception("Chave secreta JWT não encontrada."));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -43,9 +43,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(secretKey),
         ValidateIssuer = true,
-        ValidIssuer = Environment.GetEnvironmentVariable("ISSUER"),
+        ValidIssuer = Environment.GetEnvironmentVariable("ISSUER") ?? jwtSettings["Issuer"],
         ValidateAudience = true,
-        ValidAudience = Environment.GetEnvironmentVariable("AUDIENCE"),
+        ValidAudience = Environment.GetEnvironmentVariable("AUDIENCE") ?? jwtSettings["Audience"],
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero // Remove a tolerância de tempo padrão
     };
@@ -59,7 +59,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
         policy => policy
-            .WithOrigins("http://localhost:4230", "https://hairmony.hair/") 
+            .WithOrigins("http://localhost:4230", "https://hairmony.hair", "https://hairmony-api-production.up.railway.app") 
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
@@ -75,7 +75,7 @@ app.UseCors("AllowAngularApp");
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
