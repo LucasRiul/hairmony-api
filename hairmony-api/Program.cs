@@ -59,7 +59,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
         policy => policy
-            .WithOrigins("http://localhost:4230", "https://hairmony.hair/", "https://hairmony-api-production.up.railway.app/") 
+            .WithOrigins("http://localhost:4230", "https://hairmony.hair", "https://hairmony-api-production.up.railway.app") 
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
@@ -75,7 +75,7 @@ app.UseCors("AllowAngularApp");
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
