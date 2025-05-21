@@ -66,6 +66,12 @@ namespace hairmony_api.Controllers
             {
                 return BadRequest();
             }
+            var servico = await _context.servicos.FindAsync(agendamentos.servicoid);
+            if ( servico == null)
+            {
+                return BadRequest();
+            }
+            agendamentos.data_ate = agendamentos.data_ate.AddMinutes(servico!.duracao);
 
             _context.Entry(agendamentos).State = EntityState.Modified;
 
