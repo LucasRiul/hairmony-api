@@ -46,7 +46,7 @@ public class AuthController : ControllerBase
 
             // 3. Obter a chave secreta e configurações do appsettings
             var jwtSettings = _configuration.GetSection("Jwt");
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ?? jwtSettings["SecretKey"]));
             var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
             // 4. Definir as propriedades do token
@@ -54,8 +54,8 @@ public class AuthController : ControllerBase
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddHours(10),
-                Issuer = jwtSettings["Issuer"],
-                Audience = jwtSettings["Audience"],
+                Issuer = Environment.GetEnvironmentVariable("ISSUER") ?? jwtSettings["Issuer"],
+                Audience = Environment.GetEnvironmentVariable("AUDIENCE") ?? jwtSettings["Audience"],
                 SigningCredentials = credentials
             };
 
