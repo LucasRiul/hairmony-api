@@ -157,6 +157,7 @@ namespace hairmony_api.Controllers
                 worksheet.Cell(1, 4).Value = "Cliente";
                 worksheet.Cell(1, 5).Value = "WhatsApp";
                 worksheet.Cell(1, 6).Value = "Serviço";
+                worksheet.Cell(1, 7).Value = "Valor (R$)";
 
                 int row = 2;
                 foreach (var ag in agendamentos)
@@ -174,6 +175,7 @@ namespace hairmony_api.Controllers
                     worksheet.Cell(row, 4).Value = cliente.nome;
                     worksheet.Cell(row, 5).Value = AplicarMascara(cliente.celular);
                     worksheet.Cell(row, 6).Value = servico.nome;
+                    worksheet.Cell(row, 6).Value = servico.preco;
                     row++;
                 }
 
