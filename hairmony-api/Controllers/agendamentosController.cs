@@ -113,6 +113,25 @@ namespace hairmony_api.Controllers
                     return BadRequest();
                 }
 
+                #region validação
+                var verificaAgendaColaborador = _context.agendamentos
+                    .Where(x => x.colaboradorid == agendamentos.colaboradorid
+                    && agendamentos.data_de <= x.data_ate
+                    && agendamentos.data_ate >= x.data_de);
+                if (verificaAgendaColaborador.ToList().Count > 0)
+                {
+                    return Problem("Este colaborador já possui um agendamento neste intervalo de tempo.");
+                }
+
+                var verificaAgendaCliente = _context.agendamentos
+                    .Where(x => x.clienteid == agendamentos.clienteid
+                    && agendamentos.data_de <= x.data_ate
+                    && agendamentos.data_ate >= x.data_de);
+                if (verificaAgendaCliente.ToList().Count > 0)
+                {
+                    return Problem("Este cliente já possui um agendamento neste intervalo de tempo.");
+                }
+                #endregion
                 if (repete && dias != null)
                 {
                     var deDia = agendamentos.data_de;
@@ -129,6 +148,7 @@ namespace hairmony_api.Controllers
                         ag.colaboradorid = agendamentos.colaboradorid;
                         ag.data_criacao = DateTime.Now;
                         ag.concluido = false;
+                        ag.observacao = agendamentos.observacao;
                         _context.agendamentos.Add(ag);
                         deDia = deDia.AddDays(dias.Value);
                     }
