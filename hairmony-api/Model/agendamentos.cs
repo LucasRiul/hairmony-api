@@ -17,6 +17,6 @@ namespace hairmony_api.Model
         public Guid clienteid { get; set; }
         public Guid servicoid { get; set; }
         public Guid colaboradorid { get; set; }
-        public string observacao { get; set; }
+        public string? observacao { get; set; }
     }
 }

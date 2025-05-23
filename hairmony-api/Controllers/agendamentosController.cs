@@ -71,6 +71,11 @@ namespace hairmony_api.Controllers
             {
                 return BadRequest();
             }
+            var msg = validaAgenda(agendamentos);
+            if (!string.IsNullOrEmpty(msg))
+            {
+                return Problem(msg);
+            }
             agendamentos.data_ate = agendamentos.data_ate.AddMinutes(servico!.duracao);
 
             _context.Entry(agendamentos).State = EntityState.Modified;
@@ -114,22 +119,10 @@ namespace hairmony_api.Controllers
                 }
 
                 #region validação
-                var verificaAgendaColaborador = _context.agendamentos
-                    .Where(x => x.colaboradorid == agendamentos.colaboradorid
-                    && agendamentos.data_de <= x.data_ate
-                    && agendamentos.data_ate >= x.data_de);
-                if (verificaAgendaColaborador.ToList().Count > 0)
+                var msg = validaAgenda(agendamentos);
+                if (!string.IsNullOrEmpty(msg))
                 {
-                    return Problem("Este colaborador já possui um agendamento neste intervalo de tempo.");
-                }
-
-                var verificaAgendaCliente = _context.agendamentos
-                    .Where(x => x.clienteid == agendamentos.clienteid
-                    && agendamentos.data_de <= x.data_ate
-                    && agendamentos.data_ate >= x.data_de);
-                if (verificaAgendaCliente.ToList().Count > 0)
-                {
-                    return Problem("Este cliente já possui um agendamento neste intervalo de tempo.");
+                    return Problem(msg);
                 }
                 #endregion
                 if (repete && dias != null)
@@ -142,9 +135,9 @@ namespace hairmony_api.Controllers
                         var ag = new agendamentos();
                         ag.data_de = deDia.AddDays(dias.Value);
                         ag.data_ate = ag.data_de.AddMinutes(servico!.duracao);
-                        ag.clienteid= agendamentos.clienteid;
-                        ag.servicoid= agendamentos.servicoid;
-                        ag.salaoid= agendamentos.salaoid;
+                        ag.clienteid = agendamentos.clienteid;
+                        ag.servicoid = agendamentos.servicoid;
+                        ag.salaoid = agendamentos.salaoid;
                         ag.colaboradorid = agendamentos.colaboradorid;
                         ag.data_criacao = DateTime.Now;
                         ag.concluido = false;
@@ -166,6 +159,28 @@ namespace hairmony_api.Controllers
 
                 throw;
             }
+        }
+
+        private string validaAgenda(agendamentos agendamentos)
+        {
+            var verificaAgendaColaborador = _context.agendamentos
+                                .Where(x => x.colaboradorid == agendamentos.colaboradorid
+                                && agendamentos.data_de <= x.data_ate
+                                && agendamentos.data_ate >= x.data_de);
+            if (verificaAgendaColaborador.ToList().Count > 0)
+            {
+                return "Este colaborador já possui um agendamento neste intervalo de tempo.";
+            }
+
+            var verificaAgendaCliente = _context.agendamentos
+                .Where(x => x.clienteid == agendamentos.clienteid
+                && agendamentos.data_de <= x.data_ate
+                && agendamentos.data_ate >= x.data_de);
+            if (verificaAgendaCliente.ToList().Count > 0)
+            {
+                return "Este cliente já possui um agendamento neste intervalo de tempo.";
+            }
+            return string.Empty;
         }
 
         // DELETE: api/agendamentos/5
