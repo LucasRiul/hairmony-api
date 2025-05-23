@@ -164,35 +164,42 @@ namespace hairmony_api.Controllers
 
         private string validaAgenda(agendamentos agendamentos)
         {
-            var agendaColaborador = _context.agendamentos.Where(x => x.colaboradorid == agendamentos.colaboradorid).ToList();
-            foreach (var ag in agendaColaborador)
-            {
-                ag.data_de = ag.data_de.AddHours(3);
-                ag.data_ate = ag.data_ate.AddHours(3);
-            }
+            var agendaColaborador = _context.agendamentos
+                .Where(x => x.colaboradorid == agendamentos.colaboradorid)
+                .ToList();
+
             var verificaAgendaColaborador = agendaColaborador
-                                .Where(x => x.colaboradorid == agendamentos.colaboradorid
-                                && agendamentos.data_de < x.data_ate
-                                && agendamentos.data_ate > x.data_de);
-            if (verificaAgendaColaborador.ToList().Count > 0)
+                .Where(x =>
+                {
+                    var dataDe = x.data_de.AddHours(3);
+                    var dataAte = x.data_ate.AddHours(3);
+
+                    return agendamentos.data_de < dataAte && agendamentos.data_ate > dataDe;
+                });
+
+            if (verificaAgendaColaborador.Any())
             {
                 return "Este colaborador já possui um agendamento neste intervalo de tempo.";
             }
 
-            var agendaCliente = _context.agendamentos.Where(x => x.clienteid == agendamentos.clienteid).ToList();
-            foreach (var ag in agendaCliente)
-            {
-                ag.data_de = ag.data_de.AddHours(3);
-                ag.data_ate = ag.data_ate.AddHours(3);
-            }
+            var agendaCliente = _context.agendamentos
+                .Where(x => x.clienteid == agendamentos.clienteid)
+                .ToList();
+
             var verificaAgendaCliente = agendaCliente
-                .Where(x => x.clienteid == agendamentos.clienteid
-                && agendamentos.data_de < x.data_ate
-                && agendamentos.data_ate > x.data_de);
-            if (verificaAgendaCliente.ToList().Count > 0)
+                .Where(x =>
+                {
+                    var dataDe = x.data_de.AddHours(3);
+                    var dataAte = x.data_ate.AddHours(3);
+
+                    return agendamentos.data_de < dataAte && agendamentos.data_ate > dataDe;
+                });
+
+            if (verificaAgendaCliente.Any())
             {
                 return "Este cliente já possui um agendamento neste intervalo de tempo.";
             }
+
             return string.Empty;
         }
 
