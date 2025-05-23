@@ -117,6 +117,8 @@ namespace hairmony_api.Controllers
                 {
                     return BadRequest();
                 }
+                agendamentos.data_ate = agendamentos.data_de.AddMinutes(servico!.duracao);
+                agendamentos.data_criacao = DateTime.Now;
 
                 #region validação
                 var msg = validaAgenda(agendamentos);
@@ -146,8 +148,7 @@ namespace hairmony_api.Controllers
                         deDia = deDia.AddDays(dias.Value);
                     }
                 }
-                agendamentos.data_ate = agendamentos.data_de.AddMinutes(servico!.duracao);
-                agendamentos.data_criacao = DateTime.Now;
+                
                 _context.agendamentos.Add(agendamentos);
                 await _context.SaveChangesAsync();
 
@@ -163,19 +164,31 @@ namespace hairmony_api.Controllers
 
         private string validaAgenda(agendamentos agendamentos)
         {
-            var verificaAgendaColaborador = _context.agendamentos
+            var agendaColaborador = _context.agendamentos.Where(x => x.colaboradorid == agendamentos.colaboradorid).ToList();
+            foreach (var ag in agendaColaborador)
+            {
+                ag.data_de = ag.data_de.AddHours(3);
+                ag.data_ate = ag.data_ate.AddHours(3);
+            }
+            var verificaAgendaColaborador = agendaColaborador
                                 .Where(x => x.colaboradorid == agendamentos.colaboradorid
-                                && agendamentos.data_de <= x.data_ate
-                                && agendamentos.data_ate >= x.data_de);
+                                && agendamentos.data_de < x.data_ate
+                                && agendamentos.data_ate > x.data_de);
             if (verificaAgendaColaborador.ToList().Count > 0)
             {
                 return "Este colaborador já possui um agendamento neste intervalo de tempo.";
             }
 
-            var verificaAgendaCliente = _context.agendamentos
+            var agendaCliente = _context.agendamentos.Where(x => x.clienteid == agendamentos.clienteid).ToList();
+            foreach (var ag in agendaCliente)
+            {
+                ag.data_de = ag.data_de.AddHours(3);
+                ag.data_ate = ag.data_ate.AddHours(3);
+            }
+            var verificaAgendaCliente = agendaCliente
                 .Where(x => x.clienteid == agendamentos.clienteid
-                && agendamentos.data_de <= x.data_ate
-                && agendamentos.data_ate >= x.data_de);
+                && agendamentos.data_de < x.data_ate
+                && agendamentos.data_ate > x.data_de);
             if (verificaAgendaCliente.ToList().Count > 0)
             {
                 return "Este cliente já possui um agendamento neste intervalo de tempo.";
@@ -257,6 +270,11 @@ namespace hairmony_api.Controllers
                     worksheet.Cell(row, 6).Value = servico.nome;
                     worksheet.Cell(row, 7).Value = servico.preco;
                     row++;
+                }
+
+                for (int i = 1; i < 7; i++)
+                {
+                    worksheet.Column(i).Width = 28;
                 }
 
                 using var stream = new MemoryStream();
