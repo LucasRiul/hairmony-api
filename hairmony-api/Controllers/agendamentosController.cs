@@ -171,8 +171,8 @@ namespace hairmony_api.Controllers
             var verificaAgendaColaborador = agendaColaborador
                 .Where(x =>
                 {
-                    var dataDe = x.data_de.AddHours(3);
-                    var dataAte = x.data_ate.AddHours(3);
+                    var dataDe = x.data_de;
+                    var dataAte = x.data_ate;
 
                     return agendamentos.data_de < dataAte && agendamentos.data_ate > dataDe;
                 });
@@ -189,8 +189,8 @@ namespace hairmony_api.Controllers
             var verificaAgendaCliente = agendaCliente
                 .Where(x =>
                 {
-                    var dataDe = x.data_de.AddHours(3);
-                    var dataAte = x.data_ate.AddHours(3);
+                    var dataDe = x.data_de;
+                    var dataAte = x.data_ate;
 
                     return agendamentos.data_de < dataAte && agendamentos.data_ate > dataDe;
                 });
